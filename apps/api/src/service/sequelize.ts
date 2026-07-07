@@ -2,5 +2,5 @@ import { Sequelize } from 'sequelize';
 
 export const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: './db/database.db',
+  storage: process.env.DATABASE_STORAGE ?? './db/database.db',
 });

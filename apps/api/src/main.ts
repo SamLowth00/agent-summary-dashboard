@@ -3,6 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
+import 'dotenv/config';
 import express from 'express';
 import * as path from 'path';
 import { expressOpenApi } from './service/express-openapi';
@@ -10,8 +11,21 @@ import cors from 'cors';
 import { sequelize } from './service/sequelize';
 
 const app = express();
+// Allowed CORS origins, comma-separated in CORS_ORIGIN (e.g. the webapp dev
+// and Vite preview servers). Falls back to the local defaults.
+const allowedOrigins = (
+  process.env.CORS_ORIGIN ?? 'http://localhost:4200,http://localhost:4300'
+)
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 

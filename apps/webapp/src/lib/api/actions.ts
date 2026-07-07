@@ -58,6 +58,28 @@ export type GetCustomers200 = {
   data: GetCustomers200DataItem[];
 };
 
+export type GetAgentSummaryParams = {
+  page?: number;
+  pageSize?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  minInteractions?: number;
+};
+
+export type GetAgentSummary200DataItem = {
+  date?: string;
+  agentName?: string;
+  totalInteractions?: number;
+  aveInteractionLength?: number;
+};
+
+export type GetAgentSummary200 = {
+  data: GetAgentSummary200DataItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
 export type GetAgents200DataItem = {
   id?: number;
   name?: string;
@@ -611,6 +633,161 @@ export function useGetCustomers<
   return query;
 }
 
+export const getAgentSummary = (
+  params?: GetAgentSummaryParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<GetAgentSummary200>> => {
+  return axios.get(`/agentSummary`, {
+    ...options,
+    params: { ...params, ...options?.params },
+  });
+};
+
+export const getGetAgentSummaryQueryKey = (params?: GetAgentSummaryParams) => {
+  return [`/agentSummary`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetAgentSummaryQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAgentSummary>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetAgentSummaryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAgentSummary>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAgentSummaryQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAgentSummary>>> = ({
+    signal,
+  }) => getAgentSummary(params, { signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAgentSummary>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetAgentSummaryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAgentSummary>>
+>;
+export type GetAgentSummaryQueryError = AxiosError<unknown>;
+
+export function useGetAgentSummary<
+  TData = Awaited<ReturnType<typeof getAgentSummary>>,
+  TError = AxiosError<unknown>
+>(
+  params: undefined | GetAgentSummaryParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAgentSummary>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAgentSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getAgentSummary>>
+        >,
+        'initialData'
+      >;
+    axios?: AxiosRequestConfig;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAgentSummary<
+  TData = Awaited<ReturnType<typeof getAgentSummary>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetAgentSummaryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAgentSummary>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAgentSummary>>,
+          TError,
+          Awaited<ReturnType<typeof getAgentSummary>>
+        >,
+        'initialData'
+      >;
+    axios?: AxiosRequestConfig;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAgentSummary<
+  TData = Awaited<ReturnType<typeof getAgentSummary>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetAgentSummaryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAgentSummary>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetAgentSummary<
+  TData = Awaited<ReturnType<typeof getAgentSummary>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetAgentSummaryParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getAgentSummary>>,
+        TError,
+        TData
+      >
+    >;
+    axios?: AxiosRequestConfig;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetAgentSummaryQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * Get all agent records.
  */
@@ -808,6 +985,33 @@ export const getGetCustomersResponseMock = (
   ...overrideResponse,
 });
 
+export const getGetAgentSummaryResponseMock = (
+  overrideResponse: Partial<GetAgentSummary200> = {}
+): GetAgentSummary200 => ({
+  data: Array.from(
+    { length: faker.number.int({ min: 1, max: 10 }) },
+    (_, i) => i + 1
+  ).map(() => ({
+    date: faker.helpers.arrayElement([
+      faker.date.past().toISOString().split('T')[0],
+      undefined,
+    ]),
+    agentName: faker.helpers.arrayElement([faker.string.alpha(20), undefined]),
+    totalInteractions: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      undefined,
+    ]),
+    aveInteractionLength: faker.helpers.arrayElement([
+      faker.number.int({ min: undefined, max: undefined }),
+      undefined,
+    ]),
+  })),
+  total: faker.number.int({ min: undefined, max: undefined }),
+  page: faker.number.int({ min: undefined, max: undefined }),
+  pageSize: faker.number.int({ min: undefined, max: undefined }),
+  ...overrideResponse,
+});
+
 export const getGetAgentsResponseMock = (
   overrideResponse: Partial<GetAgents200> = {}
 ): GetAgents200 => ({
@@ -908,6 +1112,27 @@ export const getGetCustomersMockHandler = (
   });
 };
 
+export const getGetAgentSummaryMockHandler = (
+  overrideResponse?:
+    | GetAgentSummary200
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0]
+      ) => Promise<GetAgentSummary200> | GetAgentSummary200)
+) => {
+  return http.get('*:3333/agentSummary', async (info) => {
+    return new HttpResponse(
+      JSON.stringify(
+        overrideResponse !== undefined
+          ? typeof overrideResponse === 'function'
+            ? await overrideResponse(info)
+            : overrideResponse
+          : getGetAgentSummaryResponseMock()
+      ),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+  });
+};
+
 export const getGetAgentsMockHandler = (
   overrideResponse?:
     | GetAgents200
@@ -933,5 +1158,6 @@ export const getConnexAITechTestAPIMock = () => [
   getGetCurrentServerTimeMockHandler(),
   getGetInteractionsMockHandler(),
   getGetCustomersMockHandler(),
+  getGetAgentSummaryMockHandler(),
   getGetAgentsMockHandler(),
 ];

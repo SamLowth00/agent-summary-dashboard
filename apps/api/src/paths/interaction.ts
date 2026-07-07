@@ -3,7 +3,10 @@ import { Operation } from 'express-openapi';
 import { Interaction } from '../util/models/Interaction';
 
 export const GET: Operation = async (req: Request, res: Response) => {
-  const interactions = await Interaction.findAll();
+  // current version does not parse the datetime as DATE (returns null),
+  // upgrading to v7 would fix but for now, will just use raw:true to bypass
+  // type matching
+  const interactions = await Interaction.findAll({ raw: true });
 
   return res.send({ data: interactions });
 };

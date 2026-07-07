@@ -1,0 +1,27 @@
+# Dependencies & build artefacts (reinstalled/rebuilt inside the image)
+node_modules
+**/node_modules
+dist
+**/dist
+out-tsc
+tmp
+.nx/cache
+.nx/workspace-data
+
+# VCS / editor / OS
+.git
+.gitlab-ci.yml
+.idea
+.vscode
+**/.DS_Store
+
+# Secrets — provided at runtime via compose, never baked into an image
+.env
+.env.local
+.env.*.local
+
+# Misc that has no place in the build context
+Connex Tech Test.pdf
+*.log
+coverage
+test-output

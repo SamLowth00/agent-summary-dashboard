@@ -10,12 +10,15 @@ import axios from 'axios';
  * @param long longitude
  * @returns current temperature at location in Celsius
  */
+const WEATHER_API_URL =
+  process.env.WEATHER_API_URL ?? 'https://api.open-meteo.com/v1/forecast';
+
 export const coordsToTemp = async (
   lat: number,
   long: number
 ): Promise<number> => {
   const locationResult = await axios.get(
-    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m&timezone=auto&forecast_days=1`
+    `${WEATHER_API_URL}?latitude=${lat}&longitude=${long}&current=temperature_2m&timezone=auto&forecast_days=1`
   );
   return locationResult.data.current.temperature_2m as number;
 };
