@@ -1,6 +1,7 @@
-import { Route, Routes, Link } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Dashboard from '../components/Dashboard';
 import AppTheme from '../theme/AppTheme';
+import { AssistantWidget } from '../components/assistant/AssistantWidget';
 
 export function App() {
   return (
@@ -8,6 +9,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
       </Routes>
+      <AssistantWidget />
     </AppTheme>
   );
 }

@@ -9,6 +9,7 @@ import * as path from 'path';
 import { expressOpenApi } from './service/express-openapi';
 import cors from 'cors';
 import { sequelize } from './service/sequelize';
+import { assistantRouter } from './agent/route';
 
 const app = express();
 // Allowed CORS origins, comma-separated in CORS_ORIGIN (e.g. the webapp dev
@@ -32,6 +33,8 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.get('/', (req, res) => {
   res.send({ message: 'Welcome to ConnexAI Tech Test API' });
 });
+
+app.use('/assistant', assistantRouter);
 
 expressOpenApi(app);
 
